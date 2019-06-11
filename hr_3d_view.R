@@ -1,5 +1,5 @@
 ###Combine 3d Plot with stadium dimensions###
-view_hr_test <- function(bp,ev = 100,width = 2.5){
+hr_3d_view <- function(bp,ev = 100,width = 2.5){
 
 #Convert input to string and load JSON file  
   team = toString(bp[1,12])
@@ -10,13 +10,13 @@ view_hr_test <- function(bp,ev = 100,width = 2.5){
   keep = NULL
   s = NULL
   toPlot = list()
-
+  infield = NULL
 #Choose "non compass" list of datasets  
 
   for(s in 1:11){
     if(stadium$shape[[s]]$parentID != "Compass"){
       keep = c(keep,s)}
-    if(is.null(stadium$shape[[s]]$ID) == FALSE){
+    if(length(stadium$shape[[s]]$p) == 2){
       infield = s
     }
   }
@@ -97,14 +97,17 @@ view_hr_test <- function(bp,ev = 100,width = 2.5){
     yaxis = list(title = "y - component"))
 
 #Filter outside line data to just the field fence data
-outfield_base = data.frame(tracefield1$x[[1]], tracefield1$y[[1]],tracefield1$z[[1]])
+ifelse(team == "SD"|team == "PHI", 
+       outfield_base <- data.frame(tracefield2$x[[1]], tracefield2$y[[1]],tracefield2$z[[1]]),
+       outfield_base <- data.frame(tracefield1$x[[1]], tracefield1$y[[1]],tracefield1$z[[1]]))
 colnames(outfield_base) <- c("x", "y", "z")
 
 outfield_base %>% 
   mutate(distance = round(sqrt(x^2 + y^2),2),
          direction = -1*round(-180 * atan(-x/y)/pi,2)
          ) %>%
-  filter(distance > 250 & direction <= 45 & direction >= -45) -> outfield_base
+  filter(distance > 250 & direction <= 47 & direction >= -47) %>%
+  arrange(direction) -> outfield_base
 
 outfield_base$max <- 0
 outfield_base$ave <- 0
@@ -171,23 +174,37 @@ lineconfig = list(
   width = 5
 )
 
-f = add_trace(f, x = tracefield1$x[[1]], y = tracefield1$y[[1]], z = tracefield1$z[[1]], type = tracefield1$type, mode = tracefield1$mode,
+ifelse(team == "SD"|team == "PHI",
+       f <- add_trace(f, x = tracefield2$x[[1]], y = tracefield2$y[[1]], z = tracefield2$z[[1]], type = tracefield2$type, mode = tracefield2$mode,
               hoverinfo = "text",
-              text = ~paste("</br> x: ",tracefield1$x[[1]],
-                            "</br> y: ",tracefield1$y[[1]],
-                            "</br> Distance: ", round(sqrt((tracefield1$x[[1]])^2 + (tracefield1$y[[1]])^2),2),
-                            "</br> Dir: ", round(-180*atan(-tracefield1$x[[1]]/tracefield1$y[[1]])/pi,2)
+              text = ~paste("</br> x: ",tracefield2$x[[1]],
+                            "</br> y: ",tracefield2$y[[1]],
+                            "</br> Distance: ", round(sqrt((tracefield2$x[[1]])^2 + (tracefield2$y[[1]])^2),2),
+                            "</br> Dir: ", round(-180*atan(-tracefield2$x[[1]]/tracefield2$y[[1]])/pi,2)
                             ),
               line = lineconfig
-              )
+              ),
+       f <- add_trace(f, x = tracefield1$x[[1]], y = tracefield1$y[[1]], z = tracefield1$z[[1]], type = tracefield1$type, mode = tracefield1$mode,
+                      hoverinfo = "text",
+                      text = ~paste("</br> x: ",tracefield1$x[[1]],
+                                    "</br> y: ",tracefield1$y[[1]],
+                                    "</br> Distance: ", round(sqrt((tracefield1$x[[1]])^2 + (tracefield1$y[[1]])^2),2),
+                                    "</br> Dir: ", round(-180*atan(-tracefield1$x[[1]]/tracefield1$y[[1]])/pi,2)
+                      ),
+                      line = lineconfig
+       ))
 
 #Rest of the Ballpark
-f = add_trace(f, x = tracefield2$x[[1]], y = tracefield2$y[[1]], z = tracefield2$z[[1]], type = tracefield2$type, mode = tracefield2$mode)
+ifelse(team == "SD"|team == "PHI",
+       f <- add_trace(f, x = tracefield1$x[[1]], y = tracefield1$y[[1]], z = tracefield1$z[[1]], type = tracefield1$type, mode = tracefield1$mode),
+       f <- add_trace(f, x = tracefield2$x[[1]], y = tracefield2$y[[1]], z = tracefield2$z[[1]], type = tracefield2$type, mode = tracefield2$mode))
 f = add_trace(f, x = tracefield3$x[[1]], y = tracefield3$y[[1]], z = tracefield3$z[[1]], type = tracefield3$type, mode = tracefield3$mode)
 f = add_trace(f, x = tracefield4$x[[1]], y = tracefield4$y[[1]], z = tracefield4$z[[1]], type = tracefield4$type, mode = tracefield4$mode)
 f = add_trace(f, x = tracefield5$x[[1]], y = tracefield5$y[[1]], z = tracefield5$z[[1]], type = tracefield5$type, mode = tracefield5$mode)
 f = add_trace(f, x = tracefield6$x[[1]], y = tracefield6$y[[1]], z = tracefield6$z[[1]], type = tracefield6$type, mode = tracefield6$mode)
 f = add_trace(f, x = tracefield7$x[[1]], y = tracefield7$y[[1]], z = tracefield7$z[[1]], type = tracefield7$type, mode = tracefield7$mode)
+
+
 
 #Plot the HR data, along with player name of the hitter  
 f <- add_trace(f,x = c(-3.76*foo$y), y = c(3.76*foo$x), z = c(foo$launch_angle), 
