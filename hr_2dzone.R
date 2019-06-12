@@ -1,10 +1,6 @@
 #Plots homeruns at a specific ballpark and loess lines to create intial HR zone
-# hr_2dzone<- function(bp,ev = 100,width = 2.5, inc = 1){
-bp <- LAA
-ev = 100
-width = 2.5
-inc = 1
-
+hr_2dzone<- function(bp, ev = 100, width = 3, inc = 1){
+  
 foo <- bp 
   foo <- foo[order(foo[,"launch_direction"], decreasing = T), ] #Order by launch direction
   
@@ -18,6 +14,7 @@ foo <- bp
   
   ####Zone Building####
   #Reset Parameter
+  outfield_base <- NULL
   p = 1
   dir = -45
   #Start of loop
@@ -67,7 +64,11 @@ foo <- bp
   )
   
   layout <- list(
-    autosize = TRUE, 
+    #autosize = FALSE,
+    aspectmode = "manual",
+    aspectratio = list(
+      x = 3,
+      y = 3),
     hovermode = "closest", 
     scene = list(
       xaxis = list(
@@ -80,7 +81,7 @@ foo <- bp
         type = "linear"
       ) 
     ), 
-    title = paste("Home Runs at", foo[1,2], "with exit velocity <= ", ev, "mph") ,
+    title = paste("Home Runs at", foo[1,2], "with exit velocity between ", ev, "mph") ,
     xaxis = list(title = "Launch Direction"), 
     yaxis = list(title = "Launch Angle"))
   
