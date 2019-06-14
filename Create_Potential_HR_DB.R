@@ -17,7 +17,7 @@ pot_HR_data_16$launch_direction <- -1*as.numeric(pot_HR16)
 
 
 #2017 Season
-url_17 = read_html("https://baseballsavant.mlb.com/statcast_search?hfPT=&hfAB=&hfBBT=&hfPR=&hfZ=&stadium=&hfBBL=&hfNewZones=&hfGT=R%7C&hfC=&hfSea=2017%7C&hfSit=&player_type=batter&hfOuts=&opponent=&pitcher_throws=&batter_stands=&hfSA=&game_date_gt=&game_date_lt=&hfInfield=&team=&position=&hfOutfield=&hfRO=&home_road=&hfFlag=&hfPull=&metric_1=h_launch_speed&metric_1_gt=85&metric_1_lt=&metric_2=h_launch_angle&metric_2_gt=10&metric_2_lt=55&metric_3=h_launch_direction&metric_3_gt=-45&metric_3_lt=45&metric_4=api_h_distance_projected&metric_4_gt=285&metric_4_lt=&hfInn=&min_pitches=0&min_results=0&group_by=name-event&sort_col=pitches&player_event_sort=h_launch_direction&sort_order=desc&min_pas=0#results")
+pot_url_17 = read_html("https://baseballsavant.mlb.com/statcast_search?hfPT=&hfAB=&hfBBT=&hfPR=&hfZ=&stadium=&hfBBL=&hfNewZones=&hfGT=R%7C&hfC=&hfSea=2017%7C&hfSit=&player_type=batter&hfOuts=&opponent=&pitcher_throws=&batter_stands=&hfSA=&game_date_gt=&game_date_lt=&hfInfield=&team=&position=&hfOutfield=&hfRO=&home_road=&hfFlag=&hfPull=&metric_1=h_launch_speed&metric_1_gt=85&metric_1_lt=&metric_2=h_launch_angle&metric_2_gt=10&metric_2_lt=55&metric_3=h_launch_direction&metric_3_gt=-45&metric_3_lt=45&metric_4=api_h_distance_projected&metric_4_gt=285&metric_4_lt=&hfInn=&min_pitches=0&min_results=0&group_by=name-event&sort_col=pitches&player_event_sort=h_launch_direction&sort_order=desc&min_pas=0#results")
 pot_rank_17 <- pot_url_17 %>% html_nodes( xpath = '//*[@id="search_results"]') %>% html_table()
 pot_rank_17 <- as.list(pot_rank_17[[1]])
 pot_LD17 <- pot_rank_17$Results
@@ -34,7 +34,7 @@ pot_HR_data_17$launch_direction <- -1*as.numeric(pot_HR17)
 
 
 #2018 Season
-url_18 = read_html("https://baseballsavant.mlb.com/statcast_search?hfPT=&hfAB=&hfBBT=&hfPR=&hfZ=&stadium=&hfBBL=&hfNewZones=&hfGT=R%7C&hfC=&hfSea=2018%7C&hfSit=&player_type=batter&hfOuts=&opponent=&pitcher_throws=&batter_stands=&hfSA=&game_date_gt=&game_date_lt=&hfInfield=&team=&position=&hfOutfield=&hfRO=&home_road=&hfFlag=&hfPull=&metric_1=h_launch_speed&metric_1_gt=85&metric_1_lt=&metric_2=h_launch_angle&metric_2_gt=10&metric_2_lt=55&metric_3=h_launch_direction&metric_3_gt=-45&metric_3_lt=45&metric_4=api_h_distance_projected&metric_4_gt=285&metric_4_lt=&hfInn=&min_pitches=0&min_results=0&group_by=name-event&sort_col=pitches&player_event_sort=h_launch_direction&sort_order=desc&min_pas=0#results")
+pot_url_18 = read_html("https://baseballsavant.mlb.com/statcast_search?hfPT=&hfAB=&hfBBT=&hfPR=&hfZ=&stadium=&hfBBL=&hfNewZones=&hfGT=R%7C&hfC=&hfSea=2018%7C&hfSit=&player_type=batter&hfOuts=&opponent=&pitcher_throws=&batter_stands=&hfSA=&game_date_gt=&game_date_lt=&hfInfield=&team=&position=&hfOutfield=&hfRO=&home_road=&hfFlag=&hfPull=&metric_1=h_launch_speed&metric_1_gt=85&metric_1_lt=&metric_2=h_launch_angle&metric_2_gt=10&metric_2_lt=55&metric_3=h_launch_direction&metric_3_gt=-45&metric_3_lt=45&metric_4=api_h_distance_projected&metric_4_gt=285&metric_4_lt=&hfInn=&min_pitches=0&min_results=0&group_by=name-event&sort_col=pitches&player_event_sort=h_launch_direction&sort_order=desc&min_pas=0#results")
 pot_rank_18 <- pot_url_18 %>% html_nodes( xpath = '//*[@id="search_results"]') %>% html_table()
 pot_rank_18 <- as.list(pot_rank_18[[1]])
 pot_LD18 <- pot_rank_18$Results
@@ -156,30 +156,30 @@ pot_HR_data_18 %>%
 
 #Combining the two season's worth of data
 #Removing HRs15 until the data is cleaned up
-All_Homeruns <- rbind(Homeruns_16, Homeruns_17, Homeruns_18)
+pot_All_Homeruns <- rbind(pot_Homeruns_16, pot_Homeruns_17, pot_Homeruns_18)
 
 
 #Converting Angles into Radians
-All_Homeruns %>%
+pot_All_Homeruns %>%
   mutate(hit_distance_sc = as.numeric(as.character(hit_distance_sc)),
          x = launch_speed * cos((pi*launch_direction)/180),
          y = launch_speed * sin((pi*launch_direction)/180),
-         z = launch_speed * tan((pi*launch_angle)/180)) -> HR_All
+         z = launch_speed * tan((pi*launch_angle)/180)) -> pot_HR_All
 
-#Create a list of ballparks
-HR_All %>%
-  select(PARK_ID) %>%
-  distinct() -> stadiums
-stadiums %>%
-  inner_join(bp_bridge, by = c("PARK_ID" = "Stadium")) -> stadiums
-
+# #Create a list of ballparks
+# HR_All %>%
+#   select(PARK_ID) %>%
+#   distinct() -> stadiums
+# stadiums %>%
+#   inner_join(bp_bridge, by = c("PARK_ID" = "Stadium")) -> stadiums
+# 
 
 #Converting Angles into Radians using Distance
-All_Homeruns %>%
-  mutate(hit_distance_sc = as.numeric(as.character(hit_distance_sc)),
-         x = hit_distance_sc*cos((pi*launch_direction)/180),
-         y = hit_distance_sc*sin((pi*launch_direction)/180),
-         z = hit_distance_sc*tan((pi*launch_angle)/180)) %>%
-  filter(hit_distance_sc != 0) -> HR_All_Dist
+# pot_All_Homeruns %>%
+#   mutate(hit_distance_sc = as.numeric(as.character(hit_distance_sc)),
+#          x = hit_distance_sc*cos((pi*launch_direction)/180),
+#          y = hit_distance_sc*sin((pi*launch_direction)/180),
+#          z = hit_distance_sc*tan((pi*launch_angle)/180)) %>%
+#   filter(hit_distance_sc != 0) -> pot_HR_All_Dist
 
 
