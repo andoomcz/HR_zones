@@ -1,6 +1,36 @@
+ # ####READ ME####
+ # 
+ #  This function selects all potential homeruns with specified exit velocity or less
+ # at the specified ballpark by doing the following:
+ #   1. For each exit velocity from 87 ~ specified EV create a homerun zone defined in the view_hr2d
+ #   2. Determine whether each batted ball could be a HR at the specified park by determining whether each
+ #   batted ball in the table is within the homerun zone
+ #   3. A batted ball is "determined" to be potentially a HR if the exit velocity is at least 97.5% the 
+ #   velocity that was used to generate the specific HR zone. 
+ #   4. If a ball was determined to potentially be a HR, then this will be flagged, and will not be 
+ #   evaluated for higher EVs. 
+ #   5. Once we have determined all the potential HRs, we will plot them into the ballpark dimension
+ #   6. As some ballpark dimension data have limited points, the vizualization kinda sucks when we try
+ #   plotting 3D. So, we plot the 3D zone by each exit velocity multiplied by a factor of ~ 2.76
+ #   7. Thus the visualization is rather arbitrarily fit to satisfy the visual needs.
+ #   8. Each time the function is called, I pull in the specified ballpark dimension from my directory, 
+ #   and then convert it to a usable list format.
+ #   9. The json files were not very consistent in the structure, so some ballparks may be missing non-outfield
+ #   lines. 
+ #   10. The ballpark dimension is pretty much accurate, and scaled so that each unit = 1 foot.
+ #   
+ #   
+ # Created By Wataru Ando last update 6/19/2019
+ # Ballpark Dimension Data Provided by Andy Kim and the MLB StatCast team
+ # Batted Ball Data Provided by BaseballSavant
+ # Game Logs used to determine the ballpark each HR was hit Provided by Retrosheet
+ # Game Log data parsed using Chadwick Bureau
+ # 
+
+
 ###Combine 3d Plot with stadium dimensions###
-  potential_hr_3d <- function(bp, ev = 100, width = 2.5, inc = 1){
-  
+potential_hr_3d <- function(bp, ev = 100, width = 3.5, inc = 1){
+
 
   #Convert input to string and load JSON file  
   team = toString(bp[1,12])
@@ -92,7 +122,7 @@
         type = "linear"
       )
     ), 
-    title = paste("Home Runs at", bp[1,2], "with exit velocity <= ", ev, "mph") ,
+    title = paste("Potential Home Runs at", bp[1,2], "with exit velocity <= ", ev, "mph") ,
     xaxis = list(title = "Deviation from Dead Center (in feet)"), 
     yaxis = list(title = "y - component"))
   
@@ -133,11 +163,10 @@
     dir = dir + inc
   }
   
-  mh = ev * 0.975
-  
+
   linesmax <- list(
-    x = -3.75 * mh * cos(-1*pi*(outfield_base$angle - 90)/180),
-    y = 3.75 * mh * sin(-1*pi*(outfield_base$angle - 90)/180),
+    x = -3.75 * ev * cos(-1*pi*(outfield_base$angle - 90)/180),
+    y = 3.75 * ev * sin(-1*pi*(outfield_base$angle - 90)/180),
     z = outfield_base$max,
     type = "scatter3d",
     mode = "lines",
@@ -149,8 +178,8 @@
   
   
   linesave <- list(
-    x = -3.75 * mh * cos(-1*pi*(outfield_base$angle - 90)/180),
-    y = 3.75 * mh * sin(-1*pi*(outfield_base$angle - 90)/180),
+    x = -3.75 * ev * cos(-1*pi*(outfield_base$angle - 90)/180),
+    y = 3.75 * ev * sin(-1*pi*(outfield_base$angle - 90)/180),
     z = outfield_base$ave,
     type = "scatter3d",
     mode = "lines",
@@ -162,8 +191,8 @@
   
   
   linesmin <-  list(
-    x = -3.75 * mh * cos(-1*pi*(outfield_base$angle - 90)/180),
-    y = 3.75 * mh * sin(-1*pi*(outfield_base$angle - 90)/180),
+    x = -3.75 * ev * cos(-1*pi*(outfield_base$angle - 90)/180),
+    y = 3.75 * ev * sin(-1*pi*(outfield_base$angle - 90)/180),
     z = outfield_base$min,
     type = "scatter3d",
     mode = "lines",
@@ -175,31 +204,46 @@
   
   ####Potential Homeruns####
   
-  #Creating "Potential" Limit Line
-  pot_inf <-  0.975 * ev
+  #Reset Parameters
+  spd <- 87
+  pot_HRs <- NULL
   
+  #Set flag to 0
+  pot_HR_All$determined = 0 
+  
+  #For each exit velocity with incremental 1 MPH, create a HR zone
+  while(spd <= ev){
+    
+  #Filter out by all potential undetermined HRs with sufficient exit velocity 
   pot_HR_All %>% 
-    filter(launch_speed <= max(foo$launch_speed) & launch_speed >= pot_inf) -> potential_HRs
+      filter(determined == 0) %>%
+      filter(launch_speed <= spd & launch_speed >= spd * 0.975) -> potential_HRs
   
   #Reset Parameter
   p = 1
   dir = -45
-  pot_HRs <- NULL
+
+  #Call Zone Building Function
+  hr_base <- hr_zone_sp_ev(bp, spd, width, inc)
   
   #Start of loop
   while(dir <= 45){
-    if(outfield_base$max[p]- outfield_base$min == 0){
+    if(hr_base$max[p] - hr_base$min[p] == 0){
       p <- p + 1
       dir <- dir + inc}else{
     potential_HRs %>% 
       filter(launch_direction < dir + inc/2 & launch_direction >= dir - inc/2) -> look_range
     look_range %>%
-      filter(launch_angle <= outfield_base$max[p] & launch_angle >= outfield_base$min[p]) -> to_add
+      filter(launch_angle <= hr_base$max[p] & launch_angle >= hr_base$min[p]) -> to_add
+    if(count(to_add) != 0){
+      to_add$determined = 1}
     pot_HRs <- rbind(pot_HRs, to_add)
     p <- p + 1
     dir <- dir + inc
-  }}
+      }}
+  spd = spd + 1
   
+  }
   
   
   
@@ -246,7 +290,7 @@
   
   
   
-  #Plot the HR data, along with player name of the hitter  
+  #Plot the HR data, along with batter name 
   f <- add_trace(f,x = c(-3.76*foo$y), y = c(3.76*foo$x), z = c(foo$launch_angle), 
                  type = "scatter3d",
                  marker = list(size = 4),
@@ -260,6 +304,7 @@
   )
   
 
+  #Plot the potential homerun data, along with batter name
   f <- add_trace(f,x = c(-3.76*pot_HRs$y), y = c(3.76*pot_HRs$x), z = c(pot_HRs$launch_angle), 
                  type = "scatter3d",
                  marker = list(size = 4),
@@ -273,7 +318,7 @@
   )
 
   
-  #Plot the HR Lines
+  #Plot the HR Lines generated by the maximum exit velo 
   f <- add_trace(f, x = linesmax$x, y = linesmax$y, z = linesmax$z, type = linesmax$type, 
                  mode = linesmax$mode, line = linesmax$line,
                  hoverinfo = "text",
