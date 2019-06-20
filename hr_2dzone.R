@@ -4,8 +4,9 @@ hr_2dzone<- function(bp, ev = 100, width = 3, inc = 1){
 foo <- bp 
   foo <- foo[order(foo[,"launch_direction"], decreasing = T), ] #Order by launch direction
   
+  #Filter by desired exit velo
   foo %>%
-    filter(launch_speed <= ev) -> foo #Filter by desired exit velo
+    filter(launch_speed <= ev) -> foo 
   
   # foo$min <- 0 #Add new columns
   # foo$ave <- 0
