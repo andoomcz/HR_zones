@@ -31,7 +31,9 @@
 ###Combine 3d Plot with stadium dimensions###
 potential_hr_3d <- function(bp, ev = 100, width = 3.5, inc = 1){
 
-
+  #To make the function "a little bit" efficient
+  ev = ifelse(ev >= 122, ev <- 122, ev)
+  
   #Convert input to string and load JSON file  
   team = toString(bp[1,12])
   filepath = paste("~/Desktop/BaseballData/MatchScore/Data/field/",team,".svg.json", sep = "")

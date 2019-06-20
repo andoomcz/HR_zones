@@ -1,6 +1,9 @@
 #### Potential HR using 2d Plots####
 potential_hr_2d <- function(bp, ev = 100, width = 3.5, inc = 1){
-
+  
+  #To make the function "a little bit" efficient
+  ev = ifelse(ev >= 122, ev <- 122, ev)
+  
   ####Filter the HR data to specified EV and ballpark####    
   HR_All %>%
     filter(PARK_ID == bp[1,1]) %>%
@@ -24,7 +27,7 @@ potential_hr_2d <- function(bp, ev = 100, width = 3.5, inc = 1){
         type = "linear"
       ) 
     ), 
-    title = paste("Home Runs at", foo[1,2], "with exit velocity between ", ev, "mph") ,
+    title = paste("Home Runs at", foo[1,2], "with exit velocity <= ", ev, "mph") ,
     xaxis = list(title = "Launch Direction"), 
     yaxis = list(title = "Launch Angle"))
   
