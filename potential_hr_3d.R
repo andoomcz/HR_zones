@@ -5,20 +5,20 @@
  #   1. For each exit velocity from 87 ~ specified EV create a homerun zone defined in the view_hr2d
  #   2. Determine whether each batted ball could be a HR at the specified park by determining whether each
  #   batted ball in the table is within the homerun zone
- #   3. A batted ball is "determined" to be potentially a HR if the exit velocity is at least 97.5% the 
- #   velocity that was used to generate the specific HR zone. 
- #   4. If a ball was determined to potentially be a HR, then this will be flagged, and will not be 
- #   evaluated for higher EVs. 
+ #   3. A batted ball is "determined" to be potentially a HR if the exit velocity is at least 97.5% the
+ #   velocity that was used to generate the specific HR zone.
+ #   4. If a ball was determined to potentially be a HR, then this will be flagged, and will not be
+ #   evaluated for higher EVs.
  #   5. Once we have determined all the potential HRs, we will plot them into the ballpark dimension
  #   6. As some ballpark dimension data have limited points, the vizualization kinda sucks when we try
  #   plotting 3D. So, we plot the 3D zone by each exit velocity multiplied by a factor of ~ 2.76
  #   7. Thus the visualization is rather arbitrarily fit to satisfy the visual needs.
- #   8. Each time the function is called, I pull in the specified ballpark dimension from my directory, 
+ #   8. Each time the function is called, I pull in the specified ballpark dimension from my directory,
  #   and then convert it to a usable list format.
  #   9. The json files were not very consistent in the structure, so some ballparks may be missing non-outfield
- #   lines. 
+ #   lines.
  #   10. The ballpark dimension is pretty much accurate, and scaled so that each unit = 1 foot.
- #   
+
  #   
  # Created By Wataru Ando last update 6/19/2019
  # Ballpark Dimension Data Provided by Andy Kim and the MLB StatCast team
@@ -241,7 +241,7 @@ potential_hr_3d <- function(bp, ev = 100, width = 3.5, inc = 1){
     p <- p + 1
     dir <- dir + inc
       }}
-  spd = spd + 1
+  spd = spd + 0.5
   
   }
   
