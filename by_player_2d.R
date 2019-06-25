@@ -122,7 +122,7 @@ by_player_2d <- function(pn ,bp, ev = 100, width = 3.5, inc = 1){
       if(hr_base$max[p] - hr_base$min[p] == 0){
         p <- p + 1
         dir <- dir + inc}else{
-          potential_HRs %>% 
+         potential_HRs %>% 
             filter(launch_direction < dir + inc/2 & launch_direction >= dir - inc/2) -> look_range
           look_range %>%
             filter(launch_angle <= hr_base$max[p] & launch_angle >= hr_base$min[p]) -> to_add
@@ -209,8 +209,9 @@ by_player_2d <- function(pn ,bp, ev = 100, width = 3.5, inc = 1){
   
   #Show the final plot  
   f
-}
 
+}
+ 
 
 
 

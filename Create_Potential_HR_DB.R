@@ -144,15 +144,15 @@ pot_HR_data_18 %>%
 
 pot_HR_data_16 %>% 
   mutate(Year = substr(gamecode,4,7)) %>%
-  select("PARK_ID", "NAME", "player_name", "batter", "Year", "launch_speed", "launch_angle", "launch_direction", "hit_distance_sc") -> pot_Homeruns_16 
+  select("PARK_ID", "NAME", "player_name", "batter", "Year", "launch_speed", "launch_angle", "launch_direction", "hit_distance_sc", "events") -> pot_Homeruns_16 
 
 pot_HR_data_17 %>% 
   mutate(Year = substr(gamecode,4,7)) %>%
-  select("PARK_ID", "NAME", "player_name", "batter", "Year", "launch_speed", "launch_angle", "launch_direction", "hit_distance_sc") -> pot_Homeruns_17 
+  select("PARK_ID", "NAME", "player_name", "batter", "Year", "launch_speed", "launch_angle", "launch_direction", "hit_distance_sc", "events") -> pot_Homeruns_17 
 
 pot_HR_data_18 %>% 
   mutate(Year = substr(gamecode,4,7)) %>%
-  select("PARK_ID", "NAME", "player_name", "batter", "Year","launch_speed", "launch_angle", "launch_direction", "hit_distance_sc") -> pot_Homeruns_18 
+  select("PARK_ID", "NAME", "player_name", "batter", "Year","launch_speed", "launch_angle", "launch_direction", "hit_distance_sc", "events") -> pot_Homeruns_18 
 
 #Combining the two season's worth of data
 #Removing HRs15 until the data is cleaned up
@@ -165,6 +165,12 @@ pot_All_Homeruns %>%
          x = launch_speed * cos((pi*launch_direction)/180),
          y = launch_speed * sin((pi*launch_direction)/180),
          z = launch_speed * tan((pi*launch_angle)/180)) -> pot_HR_All
+
+#Create Flag for Actual HRs
+pot_HR_All %>% mutate(is.hr = ifelse(events == 'home_run', 1, 0)) -> pot_HR_All
+
+#Create a unique ID for each row
+pot_HR_All <- tibble::rowid_to_column(pot_HR_All, "ID")
 
 # #Create a list of ballparks
 # HR_All %>%
