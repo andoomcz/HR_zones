@@ -158,6 +158,10 @@ pot_HR_data_18 %>%
 #Removing HRs15 until the data is cleaned up
 pot_All_Homeruns <- rbind(pot_Homeruns_16, pot_Homeruns_17, pot_Homeruns_18)
 
+#Remove Duplicates
+
+pot_All_Homeruns <- distinct(pot_All_Homeruns)
+
 
 #Converting Angles into Radians
 pot_All_Homeruns %>%
@@ -165,6 +169,7 @@ pot_All_Homeruns %>%
          x = launch_speed * cos((pi*launch_direction)/180),
          y = launch_speed * sin((pi*launch_direction)/180),
          z = launch_speed * tan((pi*launch_angle)/180)) -> pot_HR_All
+
 
 #Create Flag for Actual HRs
 pot_HR_All %>% mutate(is.hr = ifelse(events == 'home_run', 1, 0)) -> pot_HR_All

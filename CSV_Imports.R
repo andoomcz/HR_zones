@@ -39,3 +39,5 @@ pot_HR_data_16 <- read.csv("~/Desktop/BaseballData/MatchScore/Data/potential_hr_
 pot_HR_data_17 <- read.csv("~/Desktop/BaseballData/MatchScore/Data/potential_hr_2017.csv")
 pot_HR_data_18 <- read.csv("~/Desktop/BaseballData/MatchScore/Data/potential_hr_2018.csv")
 
+#Bridge table to retreive all HR data
+hr_bridge <- read.csv("~/Desktop/BaseballData/MatchScore/Data/hr_bridge.csv")
