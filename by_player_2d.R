@@ -161,7 +161,7 @@ by_player_2d <- function(pn ,bp, ev = 100, width = 3.5, inc = 1){
   f <- add_trace(f,x = -1 * pot_HRs$launch_direction, y = pot_HRs$launch_angle, 
                  name = pn,
                  type = "scatter",
-                 marker = list(size = 6),
+                 marker = list(size = 6, color = 'deeppink'),
                  mode = "markers",
                  hoverinfo = "text",
                  text = ~paste("</br>Launch Direction:",c(-1*pot_HRs$launch_direction),
