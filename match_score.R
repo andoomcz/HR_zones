@@ -1,5 +1,5 @@
 # #### Potential HR using 2d Plots####
-match_score <- function(bp, ev = 100, width = 3.5, inc = 1, rank = "top"){
+match_score <- function(bp, ev = 100, width = 3.5, inc = 1){
 
 #To make the function "a little bit" efficient
 ev = ifelse(ev >= 122, ev <- 122, ev)
@@ -73,7 +73,7 @@ while(spd <= ev){
   
   #Select Distinct HR data 
   pot_HRs <- distinct(pot_HRs)
-  pot_HRs %>% select('ID', 'determined') -> lj
+  pot_HRs %>% dplyr::select('ID', 'determined') -> lj
   
   #Left Join the actual data 
   pot_HR_All %>%
@@ -98,10 +98,10 @@ ranking %>%
             potential.HR.count = sum(determined),
             actual.HR.count = sum(is.hr)) %>%
   mutate(total.gain = potential.HR.count - actual.HR.count)-> ranking
-ranking %>% arrange(desc(total.gain)) -> ranking
-ranking %>% arrange(total.gain) -> ranking2
+ranking %>% arrange(total.gain) -> ranking
 
-ifelse(rank == "top", return(ranking),return(ranking2))
+ranking$park = as.character(bp[1,12])
+return(ranking)
 }
 
 
