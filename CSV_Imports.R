@@ -41,3 +41,5 @@ pot_HR_data_18 <- read.csv("~/Desktop/BaseballData/MatchScore/Data/potential_hr_
 
 #Bridge table to retreive all HR data
 hr_bridge <- read.csv("~/Desktop/BaseballData/MatchScore/Data/hr_bridge.csv")
+hr_bridge$abbrev <- as.character(hr_bridge$abbrev)
+hr_bridge$team <- as.character(hr_bridge$team)
