@@ -82,7 +82,7 @@ foo <- bp
         type = "linear"
       ) 
     ), 
-    title = paste("Home Runs at", foo[1,2], "with exit velocity between ", ev, "mph") ,
+    title = paste("Home Runs at", foo[1,2], "with exit velocity <= ", ev, "mph") ,
     xaxis = list(title = "Launch Direction"), 
     yaxis = list(title = "Launch Angle"))
   
