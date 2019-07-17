@@ -18,3 +18,4 @@ Run the CreateDatabase file (this takes a while)
 
 ***Any plotting with ballparks dimensions included***
 3-D visualization won't be avialable for public, as the json files are part of a private collection, and I do not own them. 
+
